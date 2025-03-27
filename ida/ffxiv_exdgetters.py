@@ -559,6 +559,10 @@ if api is None:
                     self.do_pattern(pattern, suffix, True)
                 pass
 
+            def create_struct_members(self, name, fields):
+                # type: (str, dict[str, str]) -> None
+                pass
+
         api = Ida7Api()
 
 if api is None:

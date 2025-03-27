@@ -7,6 +7,10 @@ import os
 
 crc = Crc32()
 
+def removeprefix(s, pfx):
+    if s.startswith(pfx):
+        s = s.replace(pfx, "", 1)
+    return s
 
 class Repository:
     def __init__(self, name, root):
@@ -21,7 +25,7 @@ class Repository:
     def get_expansion_id(self):
         # type: () -> None
         if self.name.startswith("ex"):
-            self.expansion_id = int(self.name.removeprefix("ex"))
+            self.expansion_id = int(removeprefix(self.name, "ex"))
 
     def parse_version(self):
         # type: () -> None
@@ -81,7 +85,7 @@ class GameData:
         if folder == "ffxiv":
             return 0
         else:
-            return int(folder.removeprefix("ex"))
+            return int(removeprefix(folder, "ex"))
 
     def setup(self):
         # type: () -> None
