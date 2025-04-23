@@ -458,15 +458,20 @@ if api is None:
                 # type: (DefinedStruct) -> None
                 idaapi.begin_type_updating(idaapi.UTP_STRUCT)
                 fullname = ida_helpers.clean_struct_name(struct.type)
-                ida_helpers.IdaStruct(fullname).delete_members()
-                ida_helpers.IdaStruct(fullname+"_vtbl").delete_members()
+                ida_helpers.IdaStruct(fullname).delete()
+                ida_helpers.IdaStruct(fullname+"_vtbl").delete()
                 idaapi.end_type_updating(idaapi.UTP_STRUCT)
 
             def create_struct(self, struct):
                 # type: (DefinedStruct) -> None
                 
                 fullname = ida_helpers.clean_struct_name(struct.type)
-                ida_helpers.IdaStruct(fullname).create_struct(struct.union)
+                s = ida_helpers.IdaStruct(fullname)
+                s.create_struct(struct.union)
+                if struct.size is not None:
+                    s.tif.set_fixed_struct()
+                    s.tif.set_struct_size(struct.size)
+
                 if struct.virtual_functions:
                     ida_helpers.IdaStruct(fullname+"_vtbl").create_struct(0)
 
@@ -474,7 +479,7 @@ if api is None:
                 # type: (DefinedStruct) -> None
                 idaapi.begin_type_updating(idaapi.UTP_STRUCT)
                 fullname = ida_helpers.clean_struct_name(struct.type)
-                print(struct)
+
                 s = ida_helpers.IdaStruct(fullname)
                 
                 if struct.virtual_functions != None and (
@@ -512,8 +517,8 @@ if api is None:
                     elif ida_helpers.get_idc_type_from_ida_type(
                         ida_helpers.clean_struct_name(field_type)) == ida_bytes.stru_flag():
                         field_type = ida_helpers.clean_struct_name(field_type)
-                    
-                    size = field.size if hasattr(field, "size") else None
+
+                    size = getattr(field, "size", 0)
                     s.add_member(field_name, offset, field_type, is_baseclass = field_is_base, size = size)
 
                 if struct.size is not None and struct.size != 0 and struct.size > s.size:

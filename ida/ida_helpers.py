@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Any
 
 import idaapi
 import ida_typeinf
@@ -312,7 +313,7 @@ if is_ida_9:
             if self.tif is None:
                 print(self.name)
                 idc.add_enum(idc.BADADDR, self.name, 0)
-                self.tif.set_enum_width(get_size_from_idc_type(underlying))
+                self.tif.set_enum_width(get_size_from_idc_type(get_idc_type_from_ida_type(underlying)))
                 self.tif.set_enum_sign(is_signed(underlying))
 
         def add_member(self, name, value):
@@ -375,6 +376,7 @@ else: # IDA < 9
 class IdaStruct(BaseIdaStruct):
     @property
     def tif(self):
+        # type: () -> ida_typeinf.tinfo_t
         if self._tif is None:
             self.load_struct()
         return self._tif
@@ -396,15 +398,17 @@ class IdaStruct(BaseIdaStruct):
 
     def has_member_at(self, offset):
         # type: (int) -> bool
-        return idc.get_member_id(self.tif.get_tid(), offset) != idc.BADADDR
+        return idc.get_member_id(self.tif.get_tid(), offset) != -1
 
-    def add_member(self, field_name, offset, field_type, is_baseclass = False, is_vtable = False, size = None):
-        ft = get_tinfo_from_type(field_type)
+    def add_member(self, field_name, offset, field_type, is_baseclass = False, is_vtable = False, size = 0):
+        ft = get_tinfo_from_type(field_type, size)
+        udm = self.tif.get_udm_by_offset(offset)[1]
+        if udm is not None and udm.type == ft:
+            return None
+
         udm = create_udm(field_name, offset, ft)
         if is_baseclass:
             udm.set_baseclass()
-        if size is not None:
-            udm.size = size
         if is_vtable:
             udm.set_vftable()
         return self.add_udm(udm)
@@ -420,6 +424,7 @@ class IdaStruct(BaseIdaStruct):
             return self.tif.set_named_type(self.tif.get_til(), self.tif.get_type_name(), ida_typeinf.NTF_REPLACE)
 
     def add_vfunc(self, virt_func):
+        print("add_vfunc", self.name, virt_func.name, virt_func.offset)
         offset = virt_func.offset
         field_name = virt_func.name
         
@@ -444,7 +449,6 @@ class IdaStruct(BaseIdaStruct):
 
     @property
     def size(self):
-        # print(self.name)
         return self.tif.get_unpadded_size()*size_scale
 
     def pad_to(self, offset, fullpad):
@@ -455,11 +459,13 @@ class IdaStruct(BaseIdaStruct):
                 typ, size = get_padding_size(prev_size)
                 if size > offset - prev_size:
                     typ, size = get_padding_size(offset-prev_size, prev_size)
+                size = 0
             else:
                 typ, size = ("_BYTE", offset-prev_size)
-            print('- ', typ, size)
             udm = ida_typeinf.udm_t()
-            udm.make_gap(prev_size, size)
+            udm.offset = prev_size
+            udm.type = get_tinfo_from_type(typ, size)
+            udm.size = udm.type.get_size()*8
             udm.name = "field_{0:X}".format(prev_size)
             self.add_udm(udm)
 
@@ -467,6 +473,10 @@ class IdaStruct(BaseIdaStruct):
         def delete_members(self):
             if self.tif is not None:
                 self.tif.del_udms(0, self.tif.get_udt_nmembers())
+
+        def delete(self):
+            if self.tif is not None:
+                ida_typeinf.del_numbered_type(None, self.tif.get_ordinal())
     else:
         def delete_members(self):
             s = ida_struct.get_struc(ida_struct.get_struc_id(self.name))
