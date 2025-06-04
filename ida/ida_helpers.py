@@ -401,6 +401,7 @@ class IdaStruct(BaseIdaStruct):
         return idc.get_member_id(self.tif.get_tid(), offset) != -1
 
     def add_member(self, field_name, offset, field_type, is_baseclass = False, is_vtable = False, size = 0):
+        print(self.name, field_name, offset, field_type)
         ft = get_tinfo_from_type(field_type, size)
         udm = self.tif.get_udm_by_offset(offset)[1]
         if udm is not None and udm.type == ft:
@@ -449,7 +450,7 @@ class IdaStruct(BaseIdaStruct):
 
     @property
     def size(self):
-        return self.tif.get_unpadded_size()*size_scale
+        return self.tif.get_unpadded_size()/size_scale
 
     def pad_to(self, offset, fullpad):
         while offset > self.size:
