@@ -7,7 +7,7 @@ namespace FFXIVClientStructs.FFXIV.Client.UI.Misc;
 //   Client::UI::Misc::UserFileManager::UserFileEvent
 [GenerateInterop]
 [Inherits<UserFileEvent>]
-[StructLayout(LayoutKind.Explicit, Size = 0x51AA8)]
+[StructLayout(LayoutKind.Explicit, Size = 0x51AB0)]
 public unsafe partial struct RaptureMacroModule {
     public static RaptureMacroModule* Instance() {
         var uiModule = UIModule.Instance();
@@ -63,10 +63,6 @@ public unsafe partial struct RaptureMacroModule {
 
         [MemberFunction("E8 ?? ?? ?? ?? 49 63 97 ?? ?? ?? ?? 83 FA 11")]
         public partial void Clear();
-
-        [Obsolete("This function returns the opposite. Use IsNotEmpty.", true)]
-        [MemberFunction("E8 ?? ?? ?? ?? 48 8B 4D 10 0F B6 9D ?? ?? ?? ??")]
-        public partial bool IsEmpty();
 
         [MemberFunction("E8 ?? ?? ?? ?? 48 8B 4D 10 0F B6 9D ?? ?? ?? ??")]
         public partial bool IsNotEmpty();

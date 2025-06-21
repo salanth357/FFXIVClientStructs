@@ -6,7 +6,7 @@ namespace FFXIVClientStructs.FFXIV.Client.Game.Character;
 // ctor "0F 57 C0 33 C0 0F 11 01 48 89 41 ?? 66 89 41"
 [GenerateInterop(isInherited: true)]
 [StructLayout(LayoutKind.Explicit, Size = 0x50)]
-public partial struct CharacterData {
+public unsafe partial struct CharacterData {
     [FieldOffset(0x8)] public float ModelScale;
     [FieldOffset(0xC)] public uint Health;
     [FieldOffset(0x10)] public uint MaxHealth;
@@ -18,12 +18,13 @@ public partial struct CharacterData {
     [FieldOffset(0x22)] public ushort MaxCraftingPoints;
     [FieldOffset(0x24)] public short TransformationId;
     [FieldOffset(0x26)] public ushort TitleId;
-    [FieldOffset(0x28)] public ushort StatusLoopVfxId; // TODO: 7.1: not sure
+    [FieldOffset(0x28)] public ushort StatusLoopVfxId;
     [FieldOffset(0x2A)] public byte ClassJob;
     [FieldOffset(0x2B)] public byte Level;
-
+    [FieldOffset(0x2C)] public byte Icon; // for nameplates
+    [FieldOffset(0x2D)] public byte SEPack;
     [FieldOffset(0x2E)] public byte ShieldValue;
-
+    [FieldOffset(0x2F)] public byte Map; // ENpcResident.Map
     [FieldOffset(0x30)] public byte OnlineStatus;
     [FieldOffset(0x31)] public byte Battalion; // used for determining friend/enemy state
 
@@ -53,7 +54,7 @@ public partial struct CharacterData {
     [FieldOffset(0x38)] public GameObjectId CombatTaggerId;
 
     [VirtualFunction(0)]
-    public partial void Dtor(byte freeFlags);
+    public partial CharacterData* Dtor(byte freeFlags);
 
     [VirtualFunction(1)]
     public partial void ClassJobChanged(byte from, byte to);

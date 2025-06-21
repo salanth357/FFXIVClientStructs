@@ -2,7 +2,7 @@ namespace FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 // Client::UI::Agent::AgentModule
 [GenerateInterop]
-[StructLayout(LayoutKind.Explicit, Size = 0xE50)]
+[StructLayout(LayoutKind.Explicit, Size = 0xEF8)]
 public unsafe partial struct AgentModule {
     public static AgentModule* Instance() {
         var uiModule = UI.UIModule.Instance();
@@ -14,17 +14,21 @@ public unsafe partial struct AgentModule {
     [FieldOffset(0x14)] public uint FrameCounter;
     [FieldOffset(0x18)] public float FrameDelta;
 
-    [FieldOffset(0x20), FixedSizeArray] internal FixedSizeArray452<Pointer<AgentInterface>> _agents;
-    [FieldOffset(0xE40)] public UIModuleAgentModulePtrStruct UIModuleAgentModulePtr;
+    [FieldOffset(0x20), FixedSizeArray] internal FixedSizeArray473<Pointer<AgentInterface>> _agents;
+    [FieldOffset(0xEE8)] public AgentHelpers AgentHelpers;
 
     [MemberFunction("E8 ?? ?? ?? ?? 83 7B 48 00")]
     public partial AgentInterface* GetAgentByInternalId(AgentId agentId);
+}
 
-    [StructLayout(LayoutKind.Explicit, Size = 0x10)]
-    public unsafe struct UIModuleAgentModulePtrStruct {
-        [FieldOffset(0x0)] public UIModule* UIModule;
-        [FieldOffset(0x8)] public AgentModule* AgentModule;
-    }
+[GenerateInterop]
+[StructLayout(LayoutKind.Explicit, Size = 0x10)]
+public unsafe partial struct AgentHelpers {
+    [FieldOffset(0x0)] public UIModule* UIModule;
+    [FieldOffset(0x8)] public AgentModule* AgentModule;
+
+    [MemberFunction("E8 ?? ?? ?? ?? 8B B7 ?? ?? ?? ?? 45 33 FF")]
+    public partial void HideBlockingCharaViewAgents(uint clientObjectIndex, AgentId allowedAgent);
 }
 
 public enum AgentId : uint {
@@ -61,18 +65,18 @@ public enum AgentId : uint {
     FishingNote = 29,
     FishGuide = 30,
     FishRecord = 31,
-
+    FishRelease = 32,
     QuestJournal = 33,
     ActionMenu = 34,
     Marker = 35,
     Trade = 36,
     ScreenLog = 37,
-    Request = 38, // TODO: rename to NpcTrade (Agent struct too)
+    NpcTrade = 38,
     Status = 39,
     Map = 40,
     Loot = 41, // NeedGreed
     Repair = 42,
-    // 43 repair request?
+    RepairRequest = 43,
     Materialize = 44,
     MateriaAttach = 45,
     MiragePrism = 46,
@@ -173,14 +177,15 @@ public enum AgentId : uint {
     RetainerStatus = 141,
     RetainerTask = 142,
     RetainerTaskSupply = 143,
-
+    Unk144 = 144,
     RetainerItemTransfer = 145,
     RelicGlass = 146,
     RelicNotebook = 147,
     RelicSphere = 148,
     TradeMultiple = 149,
     RelicSphereUpgrade = 150,
-
+    AWGrowthFragTrade = 151, // AnimaWeapon5TradeItem
+    AWMakingSpiritGrow = 152, // AnimaWeapon5SpiritTalk
     Relic2Glass = 153,
     Minigame = 154,
     Tryon = 155,
@@ -195,17 +200,17 @@ public enum AgentId : uint {
     PatchMark = 164, // SelectOk?
     HousingWithdrawStorage = 165,
     WeatherReport = 166,
-    // 167 wedding stuff?
+    Wedding = 167,
     LoadingTips = 168,
     Revive = 169,
-
+    Unk170 = 170, // something with RaceChocobo director/todo
     ChocoboRace = 171,
     ChocoboBreed = 172,
     GoldSaucerMiniGame = 173,
     TrippleTriad = 174,
     TripleTriadRuleAnnounce = 175,
     TripleTriadRuleSetting = 176,
-
+    Unk177 = 177,
     TripleTriadSchedule = 178,
     TripleTriadRanking = 179,
     TripleTriadTournamentResult = 180,
@@ -253,7 +258,7 @@ public enum AgentId : uint {
     WebGuidance = 222,
     Orchestrion = 223,
     BeginnerChatList = 224, // Novice Network
-    // BeginnerChatSomething = 225,
+    Unk225 = 225, // BeginnerChatKick?
     BeginnerChatInvite = 226,
     ReturnerDialog = 227,
     OrchestrionInn = 228,
@@ -265,7 +270,7 @@ public enum AgentId : uint {
     RaidFinder = 234,
     GcArmyExpedition = 235,
     GcArmyMemberList = 236,
-
+    Unk237 = 237,
     DeepDungeonInspect = 238,
     DeepDungeonMap = 239,
     DeepDungeonStatus = 240,
@@ -285,42 +290,44 @@ public enum AgentId : uint {
     PvPDuelRequest = 254,
     PvPHeader = 255,
     PvPGauge = 256, // PvPFrontlineGauge
-
-    AquariumSetting = 259,
-
+    Unk257 = 257, // PvPMKSHeaderSpec, PvPSpectatorCameraList, PvPSpectatorList
+    Unk258 = 258,
+    Aquarium = 259,
+    QTE = 260,
     DeepDungeonMenu = 261,
-
+    ContextIconMenu = 262,
     DeepDungeonResult = 263,
     ItemAppraisal = 264, // DeepDungeon Appraisal
     ItemInspection = 265, // Lockbox
     RecipeItemContext = 266, // context menus for RecipeTree and RecipeList, constructor inlined
     ContactList = 267,
-
+    PicturePreview = 268, // Preview for Sightseeing Log, Landscapes, Portraits
+    McAggre = 269,
     SatisfactionSupply = 270,
     SatisfactionSupplyResult = 271,
     SatisfactionList = 272, // new in 7.1
     Snipe = 273,
     MountSpeed = 274,
-
     PvpScreenInformationHotBar = 275,
     PvpWelcome = 276,
     JobHudNotice = 277,
-    // TreasureHunt = 278, // unsure
-    // Maneuvers1 = 279, // Rival Wings
-    // Maneuvers2 = 280, // Rival Wings
+    TreasureHighLow = 278, // Gambler's Lure
+    ManeuversArmorBoarding = 279, // Rival Wings
+    ManeuversHud = 280, // Rival Wings
     UserPolicyPerformance = 281,
     PvpTeam = 282,
     PvpTeamInputString = 283,
     PvpTeamMember = 284,
     PvPTeamResult = 285,
-
+    Unk286 = 286,
+    Unk287 = 287,
     PvpTeamCrestEditor = 288,
     PvPTeamOrganization = 289,
-
+    Unk290 = 290,
     EurekaElementalHud = 291,
     EurekaElementalEdit = 292,
     EurekaChainInfo = 293,
-    // EurekaLogos = 294,
+    Unk294 = 294, // EurekaLogos?
     EurekaMagiaActionNotebook = 295, // unconfirmed
     EurekaWeaponAdjust = 296,
     TeleportHousingFriend = 297,
@@ -336,23 +343,26 @@ public enum AgentId : uint {
     PerformanceModeSettings = 307,
     RecordReadyCheck = 308,
     Fashion = 309,
-
+    Unk310 = 310, // PvPTeamOrganization again?
     SelectYesno = 311,
     HousingGuestBook = 312,
-
+    Unk313 = 313, // GridMenu? SelectCustomString?
+    Unk314 = 314, // SelectStringEventGimmick? for some QuestEventHandler
     ReconstructionBox = 315,
     ReconstructionBuyback = 316,
     CrossWorldLinkShell = 317,
     MiragePrismENpcSatisfaction = 318,
     Description = 319, // Frontline/Bozja Description
     Alarm = 320,
+    Unk321 = 321,
     MerchantSetting = 322, // Mannequins
     FreeShop = 323,
     AozNotebook = 324, // Bluemage Spells
     RhythmAction = 325,
     WeddingNotification = 326,
     Emj = 327, // Mahjong
-
+    Unk328 = 328,
+    Unk329 = 329,
     EmjIntro = 330,
     EmjVoiceCharacter = 331, // new in 7.1
     AozContentBriefing = 332, // Masked Carnivale
@@ -371,6 +381,7 @@ public enum AgentId : uint {
     Dawn = 345, // Trust
     DawnStory = 346, // Duty Support
     HousingCatalogPreview = 347,
+    Unk348 = 348,
     SubmersibleExplorationMapSelect = 349,
     QuestRedo = 350,
     QuestRedoHud = 351,
@@ -424,13 +435,12 @@ public enum AgentId : uint {
     BannerList = 399, // Portraits
     BannerEditor = 400, // Portrait Editor
     BannerUpdateView = 401,
-
+    Unk402 = 402,
     BannerPreview = 403, // new in 7.1
     PvPMap = 404,
     CharaCard = 405, // AdventurerPlate
     CharaCardDesignSetting = 406,
     CharaCardProfileSetting = 407,
-
     PvPMKSRankRating = 408,
     PvPMKSIntroduction = 409,
     MJIHud = 410, // Island Sanctuary
@@ -450,7 +460,7 @@ public enum AgentId : uint {
     MJIEntrance = 424,
     MJISettings = 425,
     MJIHousingMenu = 426, // new in 6.40
-
+    Unk427 = 427,
     MJINekomimiRequest = 428, // favors
     ArchiveItem = 429,
     Class2JobHotbar = 430,
@@ -475,4 +485,25 @@ public enum AgentId : uint {
     Glasses = 449,
     TermFilter = 450,
     HousingInteriorPattern = 451, // new in 7.1
+    WKSHud = 452, // new in 7.2
+    WKSAnnounce = 453, // new in 7.2
+    WKSPouch = 454, // new in 7.2
+    WKSMission = 455, // new in 7.2
+    WKSMissionInfomation = 456, // new in 7.2
+    WKSRecipeNotebook = 457, // new in 7.2
+    WKSMechaOperationEntry = 458, // new in 7.2 - WKSMechaOperationEntryUI, WKSMechaOperationEntryScreen, WKSMechaOperationEntryAccept
+    WKSScoreList = 459, // new in 7.2
+    WKSAchievement = 460, // new in 7.2
+    WKSPraiseBoard = 461, // new in 7.2
+    WKSLottery = 462, // new in 7.2
+    WKSToolCustomize = 463, // new in 7.2
+    WKSHistoryBoard = 464, // new in 7.2
+    MKDInfo = 465, // new in 7.2
+    MKDContentsInfo = 466, // new in 7.2
+    MKDSupportJob = 467, // new in 7.2
+    MKDSupportJobList = 468, // new in 7.2
+    MKDSettings = 469, // new in 7.2
+    MKDTowerEntry = 470, // new in 7.2
+    Unk471 = 471, // new in 7.2 - interacts with agents MKDLoreBook, MKDInfo
+    MKDLoreBook = 472, // new in 7.2
 }

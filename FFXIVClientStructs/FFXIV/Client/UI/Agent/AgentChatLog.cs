@@ -1,14 +1,16 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.String;
+using static FFXIVClientStructs.FFXIV.Common.Configuration.ConfigBase;
 
 namespace FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 // Client::UI::Agent::ChatLog
 //   Client::UI::Agent::AgentInterface
 //     Component::GUI::AtkModuleInterface::AtkEventInterface
+//   Common::Configuration::ConfigBase::ChangeEventInterface
 [Agent(AgentId.ChatLog)]
 [GenerateInterop]
-[Inherits<AgentInterface>]
+[Inherits<AgentInterface>, Inherits<ChangeEventInterface>]
 [StructLayout(LayoutKind.Explicit, Size = 0xB38)]
 public unsafe partial struct AgentChatLog {
 
@@ -49,7 +51,7 @@ public unsafe partial struct AgentChatLog {
     public partial void LinkItem(uint itemId);
 
     [MemberFunction("E8 ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8D 4D B0 48 8B F8 E8 ?? ?? ?? ?? 41 8B D6")]
-    public partial byte* ChangeChannelName();
+    public partial CStringPointer ChangeChannelName();
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B 8D ?? ?? ?? ?? 48 33 CC E8 ?? ?? ?? ?? 48 81 C4 ?? ?? ?? ?? 41 5F 41 5D 41 5C 5F")]
     public partial void SetTabName(int tabIndex, Utf8String* tabName);

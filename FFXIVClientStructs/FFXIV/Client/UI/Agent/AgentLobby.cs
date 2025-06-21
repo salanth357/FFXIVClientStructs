@@ -14,7 +14,7 @@ namespace FFXIVClientStructs.FFXIV.Client.UI.Agent;
 [GenerateInterop]
 [Inherits<AgentInterface>, Inherits<LogoutCallbackInterface>(0x30)]
 [StructLayout(LayoutKind.Explicit, Size = 0x2308)]
-[VirtualTable("48 8D 05 ?? ?? ?? ?? 48 89 69 ?? 48 89 01 4C 8B E1", 3)]
+[VirtualTable("48 8D 05 ?? ?? ?? ?? C6 41 ?? ?? 48 89 01 33 ED", 3)]
 public unsafe partial struct AgentLobby {
     [FieldOffset(0x40)] public LobbyData LobbyData; // for lack of a better name
 
@@ -22,13 +22,15 @@ public unsafe partial struct AgentLobby {
     [FieldOffset(0xA28)] public ExcelSheet* LobbySheet;
     [FieldOffset(0xA30)] public NetworkModuleProxy* NetworkModuleProxy;
     [FieldOffset(0xA38)] public StdDeque<TextParameter> LobbyTextParameters;
-    [FieldOffset(0xA60), FixedSizeArray] internal FixedSizeArray5<Utf8String> _tempUtf8Strings;
+    [FieldOffset(0xA60), FixedSizeArray] internal FixedSizeArray4<Utf8String> _tempUtf8Strings;
+    [FieldOffset(0xC00)] public Utf8String ConnectingToDatacenterString;
     [FieldOffset(0xC68)] public StdVector<Utf8String> VersionStrings;
     [FieldOffset(0xC80)] public Utf8String DisplayedVersionString;
 
     [FieldOffset(0xD00), FixedSizeArray] internal FixedSizeArray8<Utf8String> _unkUtf8Strings;
 
     [FieldOffset(0x1178)] public sbyte ServiceAccountIndex;
+    [FieldOffset(0x1179)] public byte SelectedCharacterIndex;
 
     [FieldOffset(0x1180)] public ulong HoveredCharacterContentId;
     [FieldOffset(0x1188)] public byte DataCenter;
@@ -57,6 +59,7 @@ public unsafe partial struct AgentLobby {
 
     [FieldOffset(0x11E0)] public long IdleTime;
 
+    [FieldOffset(0x11F0)] public long QueueTimeSinceLastUpdate;
     [FieldOffset(0x1200)] public int QueuePosition;
 
     [FieldOffset(0x1205)] public sbyte HoveredCharacterIndex; // index in CharaSelectCharacterList
@@ -75,16 +78,6 @@ public unsafe partial struct AgentLobby {
     [FieldOffset(0x1348)] public LogoutCallbackInterface.LogoutParams LogoutParams;
 
     [FieldOffset(0x22B4)] public bool HasShownCharacterNotFound; // "The character you last logged out with in this play environment could not be found on the current data center."
-
-    // TODO: everything below here is wrong
-
-    // title movie stuff is seemingly no longer part of AgentLobby
-    [FieldOffset(0xA98), Obsolete("Title movie data no longer part of AgentLobby.", true)] public uint AccountExpansion;
-    [FieldOffset(0xA9C), Obsolete("Title movie data no longer part of AgentLobby.", true)] public bool ShowFreeTrialLogo;
-    [FieldOffset(0xAA0), Obsolete("Title movie data no longer part of AgentLobby.", true)] public uint TitleScreenExpansion;
-    [FieldOffset(0xAA4), Obsolete("Title movie data no longer part of AgentLobby.", true)] public bool ShowOriginalLogo; // pre-relaunch
-
-    [FieldOffset(0x12B0), Obsolete("Not updated since before Dawntrail.")] public byte RequestCharaterIndex;
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8D 8E ?? ?? ?? ?? 41 8B D7")]
     public partial void UpdateLobbyUIStage();

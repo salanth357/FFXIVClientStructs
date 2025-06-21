@@ -17,6 +17,7 @@ public unsafe partial struct RaptureGearsetModule {
         return uiModule == null ? null : uiModule->GetRaptureGearsetModule();
     }
 
+    [FieldOffset(0x48)] public UIModule* UIModulePtr;
     [FieldOffset(0x50), FixedSizeArray] internal FixedSizeArray100<GearsetEntry> _entries;
 
     [FieldOffset(0xB5D0)] public int CurrentGearsetIndex;
@@ -110,7 +111,7 @@ public unsafe partial struct RaptureGearsetModule {
     /// </summary>
     /// <param name="gearsetId">The gearset ID to link a glamour plate to </param>
     /// <param name="glamourPlateId">The glamour plate ID to link. 0 resets the linked glamour plate.</param>
-    [MemberFunction("E8 ?? ?? ?? ?? 48 8B 03 48 8B CB FF 50 20 41 C6 44 24")]
+    [MemberFunction("E8 ?? ?? ?? ?? 48 8B 03 48 8B CB FF 50 ?? 41 C6 44 24")]
     public partial void LinkGlamourPlate(int gearsetId, byte glamourPlateId);
 
     /// <summary>
@@ -146,8 +147,17 @@ public unsafe partial struct RaptureGearsetModule {
     /// <param name="gearsetId">The ID of the gearset.</param>
     /// <returns>Returns <c>true</c> if the gearset has a Banner linked to it, <c>false</c> otherwise.</returns>
     /// <remarks>Equivalent to Flags.HasFlag(GearsetFlag.Exists) &amp;&amp; BannerIndex != 0.</remarks>
-    [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 4F 0F B6 D3")]
+    [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 68 48 8B 4F 48")]
     public partial bool HasLinkedBanner(byte gearsetId);
+
+    /// <summary>
+    /// Check if a specified gearset has a Banner linked to it.
+    /// </summary>
+    /// <param name="enabledGearsetIndex">The position of the list.</param>
+    /// <returns>Returns <c>true</c> if the gearset has a Banner linked to it, <c>false</c> otherwise.</returns>
+    /// <remarks>Equivalent to Flags.HasFlag(GearsetFlag.Exists) &amp;&amp; BannerIndex != 0.</remarks>
+    [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 4F 0F B6 D3")]
+    public partial bool HasLinkedBannerByEnabledIndex(byte enabledGearsetIndex);
 
     /// <summary>
     /// Resolves the index of a GearsetEntry array that only contains enabled gearsets to the index in the actual <see cref="Entries"/> array.
@@ -269,7 +279,7 @@ public unsafe partial struct RaptureGearsetModule {
         [FieldOffset(0x36)] public byte BannerIndex;
         [FieldOffset(0x37)] public GearsetFlag Flags;
         [FieldOffset(0x38), FixedSizeArray] internal FixedSizeArray14<GearsetItem> _items;
-        [FieldOffset(0x1C0)] public ushort GlassesId;
+        [FieldOffset(0x1C0), FixedSizeArray] internal FixedSizeArray2<ushort> _glassesIds;
 
         [UnscopedRef] public ref GearsetItem GetItem(GearsetItemIndex index) => ref Items[(int)index];
 

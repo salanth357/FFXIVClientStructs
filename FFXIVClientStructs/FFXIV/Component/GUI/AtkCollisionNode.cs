@@ -12,7 +12,7 @@ namespace FFXIVClientStructs.FFXIV.Component.GUI;
 [StructLayout(LayoutKind.Explicit, Size = 0xC0)]
 [VirtualTable("E8 ?? ?? ?? ?? 49 8B 55 08 48 89 04 17", [1, 339])]
 public unsafe partial struct AtkCollisionNode : ICreatable {
-    [FieldOffset(0xB0)] public ushort CollisionType;
+    [FieldOffset(0xB0)] public ushort CollisionType; // TODO: use CollisionType enum
     [FieldOffset(0xB2)] public ushort Uses;
     [FieldOffset(0xB8)] public AtkComponentBase* LinkedComponent;
 
@@ -21,9 +21,6 @@ public unsafe partial struct AtkCollisionNode : ICreatable {
         AtkResNode.Ctor();
         VirtualTable = StaticVirtualTablePointer;
     }
-
-    [MemberFunction("E8 ?? ?? ?? ?? 84 C0 75 48 32 DB")]
-    public partial bool CheckCollisionAtCoords(short x, short y, bool inclusive);
 }
 
 public enum CollisionType : ushort {
